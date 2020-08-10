@@ -23,8 +23,16 @@ def gaussian_kernel(Y1, Y2, metric_sq, gamma):
             kern_matrix[i, j] = np.exp(-gamma * metric_sq(Y1[i], Y2[j]))
     return kern_matrix
 
-def manifold_svm(X, y):
-    kern = lambda Y1, Y2 : gaussian_kernel(Y1, Y2, grassmann.projection_metric_sq, 0.5)
+def manifold_svm(X, y, gamma):
+    """
+    Returns scikit-learn svm object using Gaussian projection metric kernel on Grassmann manifold.
+
+    Parameters:
+        X:      data
+        y:      class labels
+        gamma:  hyperparameter controlling Gaussian variance
+    """
+    kern = lambda Y1, Y2 : gaussian_kernel(Y1, Y2, grassmann.projection_metric_sq, gamma)
     clf = svm.SVC(kernel=kern)
     clf.fit(X, y)
     return clf

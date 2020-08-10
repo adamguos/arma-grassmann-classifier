@@ -40,7 +40,7 @@ obs = arma.subspace_representation(data, 5, 5)
 X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(
         obs, labels, test_size=0.4, random_state=0)
 
-clf = manifold_svm.manifold_svm(X_train, y_train)
+clf = manifold_svm.manifold_svm(X_train, y_train, 0.5)
 print(clf.score(X_test, y_test))
 
 X_train = np.load("../data/eeg_irvine/X_train.npy")
@@ -51,5 +51,14 @@ y_test = np.load("../data/eeg_irvine/y_test.npy")
 obs_train = arma.subspace_representation(X_train, 5, 5)
 obs_test = arma.subspace_representation(X_test, 5, 5)
 
-clf = manifold_svm.manifold_svm(obs_train, y_train)
+clf = manifold_svm.manifold_svm(obs_train, y_train, 0.5)
 print(clf.score(obs_test, y_test))
+
+total = 0
+for i in range(1000):
+    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(
+            obs, labels, test_size=0.4)
+    
+    clf = manifold_svm.manifold_svm(X_train, y_train, 0.5)
+    total += clf.score(X_test, y_test)
+    print(clf.score(X_test, y_test), "running average:", total / (i+1))
