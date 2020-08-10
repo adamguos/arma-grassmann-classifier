@@ -1,6 +1,7 @@
 import pdb
 import numpy as np
 from scipy import linalg
+from sklearn.base import BaseEstimator
 
 def arma_params(data, hidden_dim):
     """
@@ -119,3 +120,18 @@ def subspace_representation(data, hidden_dim, truncate):
         subs.append(linalg.orth(ob))
 
     return subs
+
+class GrassmannSignal(BaseEstimator):
+    """
+    Transforms time series data into points on a Grassmann manifold, represented by an orthonormal
+    matrix. For use in sklearn.pipeline.
+    """
+    def __init__(self, hidden_dim=5, truncate=5):
+        self.hidden_dim = hidden_dim
+        self.truncate = truncate
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X, y=None):
+        return subspace_representation(X, self.hidden_dim, self.truncate)

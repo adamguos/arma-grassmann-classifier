@@ -43,6 +43,15 @@ X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(
 clf = manifold_svm.manifold_svm(X_train, y_train, 0.5)
 print(clf.score(X_test, y_test))
 
+gs = arma.GrassmannSignal(5, 5)
+obs = gs.transform(data)
+
+X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(
+        obs, labels, test_size=0.4, random_state=0)
+
+clf = manifold_svm.manifold_svm(X_train, y_train, 0.5)
+print(clf.score(X_test, y_test))
+
 X_train = np.load("../data/eeg_irvine/X_train.npy")
 X_test = np.load("../data/eeg_irvine/X_test.npy")
 y_train = np.load("../data/eeg_irvine/y_train.npy")
