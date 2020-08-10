@@ -39,6 +39,8 @@ import pprint
 pp = pprint.PrettyPrinter(indent=4)
 pp.pprint(pipe.get_params())
 
+pdb.set_trace()
+
 grid_params = {
     "svm__kern_gamma": np.logspace(-2, 1)
 }
