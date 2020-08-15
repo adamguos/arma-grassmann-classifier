@@ -1,18 +1,12 @@
 import numpy as np
 from sklearn import svm
 
+import metrics
+
 """
 References:
     [1] Jayasumana et al: Kernel methods on Riemannian manifolds with Gaussian RBF kernels
 """
-
-def projection_metric_sq(Y1, Y2):
-    """
-    Computes projection metric between points Y1 and Y2 on Grassmann manifold. Refer to [1] section
-    6.4.
-    """
-    assert Y1.shape == Y2.shape
-    return Y1.shape[1] - (np.linalg.norm(Y1.transpose() @ Y2) ** 2)
 
 def gaussian_kernel(Y1, Y2, metric_sq, gamma):
     """
@@ -38,7 +32,7 @@ def manifold_svm(X, y, gamma):
         y:      class labels
         gamma:  hyperparameter controlling Gaussian variance
     """
-    kern = lambda Y1, Y2 : gaussian_kernel(Y1, Y2, projection_metric_sq, gamma)
+    kern = lambda Y1, Y2 : gaussian_kernel(Y1, Y2, metrics.projection_metric_sq, gamma)
     clf = svm.SVC(kernel=kern)
     clf.fit(X, y)
     return clf
@@ -50,5 +44,6 @@ class ManifoldSVM(svm.SVC):
     """
     def __init__(self, kern_gamma=0.5):
         self.kern_gamma = kern_gamma
-        kern = lambda Y1, Y2 : gaussian_kernel(Y1, Y2, projection_metric_sq, self.kern_gamma)
+        kern = lambda Y1, Y2 : gaussian_kernel(Y1, Y2, metrics.projection_metric_sq,
+                self.kern_gamma)
         super().__init__(kernel=kern)

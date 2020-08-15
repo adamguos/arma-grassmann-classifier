@@ -1,7 +1,7 @@
 import numpy as np
 import pdb
 from scipy.io import loadmat
-from sklearn import model_selection, pipeline, svm
+from sklearn import model_selection, pipeline
 import warnings
 
 import arma
