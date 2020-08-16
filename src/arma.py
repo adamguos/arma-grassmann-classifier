@@ -1,6 +1,6 @@
-import pdb
 import numpy as np
-from scipy import linalg
+import pdb
+import scipy.linalg, scipy.sparse
 from sklearn.base import BaseEstimator
 
 def arma_params(data, hidden_dim):
@@ -23,14 +23,16 @@ def arma_params(data, hidden_dim):
     Stiefel manifolds for image and video-based recognition"
     """
 
+    # hidden_dim cannot be greater than number of features in data
     for d in data:
         assert d.ndim == 2
+        assert hidden_dim <= d.shape[1]
 
     params = []
 
     for d in data:
         signal = d.transpose()
-        U, s, Vh = linalg.svd(signal, full_matrices=False)
+        U, s, Vh = scipy.linalg.svd(signal, full_matrices=False)
 
         # the k-largest singular values of signal are kept, where k = hidden_dim
         U = U[:, :hidden_dim]
@@ -38,18 +40,24 @@ def arma_params(data, hidden_dim):
         Sigma = np.diag(s[:hidden_dim])
 
         n_timesteps = signal.shape[1]   # tau in [1] and [2]
-        D1 = np.block([
-            [np.zeros((1, n_timesteps - 1)), np.zeros((1, 1))],
-            [np.eye(n_timesteps - 1), np.zeros((n_timesteps - 1, 1))]
-        ])
-        D2 = np.block([
-            [np.eye(n_timesteps - 1), np.zeros((n_timesteps - 1, 1))],
-            [np.zeros((1, n_timesteps - 1)), np.zeros((1, 1))]
-        ])
+        D1 = scipy.sparse.coo_matrix((np.array([1] * (n_timesteps - 1)),
+                (np.arange(n_timesteps - 1) + 1, np.arange(n_timesteps - 1))),
+                shape=(n_timesteps, n_timesteps))
+        D2 = scipy.sparse.coo_matrix((np.array([1] * (n_timesteps - 1)),
+                (np.arange(n_timesteps - 1), np.arange(n_timesteps - 1))),
+                shape=(n_timesteps, n_timesteps))
+        # D1 = np.block([
+        #     [np.zeros((1, n_timesteps - 1)), np.zeros((1, 1))],
+        #     [np.eye(n_timesteps - 1), np.zeros((n_timesteps - 1, 1))]
+        # ])
+        # D2 = np.block([
+        #     [np.eye(n_timesteps - 1), np.zeros((n_timesteps - 1, 1))],
+        #     [np.zeros((1, n_timesteps - 1)), np.zeros((1, 1))]
+        # ])
 
         C = U
-        A = Sigma @ Vh @ D1 @ Vh.transpose() @ linalg.inv(Vh @ D2 @ Vh.transpose()) @ linalg.inv(
-                Sigma)
+        A = Sigma @ Vh @ D1 @ Vh.transpose() @ scipy.linalg.inv(
+                Vh @ D2 @ Vh.transpose()) @ scipy.linalg.inv(Sigma)
 
         params.append((A, C))
 
@@ -117,7 +125,7 @@ def subspace_representation(data, hidden_dim, truncate):
     subs = []
 
     for ob in obs:
-        subs.append(linalg.orth(ob))
+        subs.append(scipy.linalg.orth(ob))
 
     return subs
 
