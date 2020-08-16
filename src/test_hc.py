@@ -1,8 +1,8 @@
 import os
 import numpy as np
-import time
 from scipy.io import loadmat
 from sklearn import model_selection, pipeline, preprocessing
+import time
 
 import arma
 import hermite
@@ -25,22 +25,30 @@ X_train, X_test, y_train, y_test = model_selection.train_test_split(data, labels
         random_state=0)
 """
 
+"""
 X_train = np.load("../data/eeg_irvine/X_train.npy")
 X_test = np.load("../data/eeg_irvine/X_test.npy")
 y_train = np.load("../data/eeg_irvine/y_train.npy")
 y_test = np.load("../data/eeg_irvine/y_test.npy")
+"""
+
+X = np.load("../data/audio_data_percus/X.npy", allow_pickle=True)
+y = np.load("../data/audio_data_percus/y.npy")
+X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.4,
+        random_state=0)
 
 le = preprocessing.LabelEncoder()
 le.fit(y_train)
-y_train = le.transform(y_train) * 2 - 1
-y_test = le.transform(y_test) * 2 - 1
+y_train = le.transform(y_train)
+y_test = le.transform(y_test)
 
 pipe_hc = pipeline.Pipeline([
-    ("grassmann", arma.GrassmannSignal()),
+    ("grassmann", arma.GrassmannSignal(hidden_dim=1)),
     ("hclf", HermiteClassifier())
 ])
 pipe_hc.fit(X_train, y_train)
-print(pipe_hc.score(X_test, y_test))
+pred = pipe_hc.predict(X_test)
+print(sum(pred == y_test) / len(pred))
 
 """
 frob = lambda X, Y : np.linalg.norm(X - Y)
