@@ -54,10 +54,7 @@ class HermiteClassifier(BaseEstimator, ClassifierMixin):
         Phis = np.zeros_like(labels).astype(float)
 
         for j in range(Phis.shape[0]):
-            Phis[j, :] = hermite.Phi(self.n, self.q, norms[j, :])
-
-        # return np.sign(self.coef * np.sum(labels * Phis, axis=0))
-        # return self.coef * np.sum(labels * Phis, axis=0)
+            Phis[j, :] = hermite.Phi(self.n, self.q, (self.n ** (1 - self.alpha)) * norms[j, :])
 
         pred = self.coef * np.sum(labels * Phis, axis=0)
         pred = pred - pred.min()
