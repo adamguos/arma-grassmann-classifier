@@ -6,10 +6,10 @@ import time
 
 import arma
 import hermite
-from hermite_classifier import HermiteClassifier
+import hermite_classifier
+import manifold_svm
 import metrics
 
-"""
 data = []
 labels = []
 raw = loadmat("../data/videoclipdata_naoki/LipData.mat")["data"][0, 0]
@@ -21,34 +21,37 @@ for d in range(5):
     for i in range(10):
         labels.append(d + 1)
 
-X_train, X_test, y_train, y_test = model_selection.train_test_split(data, labels, test_size=0.4,
-        random_state=0)
-"""
+X_train, X_test, y_train, y_test = model_selection.train_test_split(data, labels, test_size=0.4)
 
-"""
-X_train = np.load("../data/eeg_irvine/X_train.npy")
-X_test = np.load("../data/eeg_irvine/X_test.npy")
-y_train = np.load("../data/eeg_irvine/y_train.npy")
-y_test = np.load("../data/eeg_irvine/y_test.npy")
-"""
+# X_train = np.load("../data/eeg_irvine/X_train.npy")
+# X_test = np.load("../data/eeg_irvine/X_test.npy")
+# y_train = np.load("../data/eeg_irvine/y_train.npy")
+# y_test = np.load("../data/eeg_irvine/y_test.npy")
 
-X = np.load("../data/audio_data_percus/X.npy", allow_pickle=True)
-y = np.load("../data/audio_data_percus/y.npy")
-X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.4,
-        random_state=0)
+# X = np.load("../data/audio_data_percus/X.npy", allow_pickle=True)
+# y = np.load("../data/audio_data_percus/y.npy")
+# X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.4)
 
 le = preprocessing.LabelEncoder()
-le.fit(y_train)
+le.fit(np.concatenate((y_train, y_test)))
 y_train = le.transform(y_train)
 y_test = le.transform(y_test)
 
 pipe_hc = pipeline.Pipeline([
-    ("grassmann", arma.GrassmannSignal(hidden_dim=1)),
-    ("hclf", HermiteClassifier())
+    ("grassmann", arma.GrassmannSignal(hidden_dim=5)),
+    ("hclf", hermite_classifier.HermiteClassifier())
 ])
 pipe_hc.fit(X_train, y_train)
-pred = pipe_hc.predict(X_test)
-print(sum(pred == y_test) / len(pred))
+pred_hc = pipe_hc.predict(X_test)
+print("hc:", sum(pred_hc == y_test) / len(pred_hc))
+
+pipe_svm = pipeline.Pipeline([
+    ("grassmann", arma.GrassmannSignal(hidden_dim=5)),
+    ("svm", manifold_svm.ManifoldSVM())
+])
+pipe_svm.fit(X_train, y_train)
+pred_svm = pipe_svm.predict(X_test)
+print("svm:", sum(pred_svm == y_test) / len(pred_svm))
 
 """
 frob = lambda X, Y : np.linalg.norm(X - Y)
@@ -84,7 +87,7 @@ X = np.random.random((100, 2)) * 2 - 1
 y = np.sign(X[:, 0])
 
 pipe_hc = pipeline.Pipeline([
-    ("hermite_classifier", HermiteClassifier())
+    ("hermite_classifier", hermite_classifier.HermiteClassifier())
 ])
 grid_params = {
     "hermite_classifier__alpha": np.linspace(0, 5, 11),
