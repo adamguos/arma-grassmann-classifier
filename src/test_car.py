@@ -22,20 +22,8 @@ pipe_hc = sklearn.pipeline.Pipeline([
     ("hclf", hermite_classifier.HermiteClassifier())
 ])
 
-pipe_hc.set_params(grassmann__hidden_dim=1, hclf__alpha=0.0001, hclf__n=2, hclf__q=2,
-        trimmer__start=-7*48000)
-
-grid_params = {
-    "trimmer__start": -(np.arange(5) + 6) * 48000,
-    "grassmann__hidden_dim": np.array([1, 2]),
-    "hclf__n": (np.arange(4) + 1) * 2,
-    "hclf__q": (np.arange(5) + 1) * 2,
-    "hclf__alpha": np.logspace(-4, 0, 5)
-}
-
-clf_hc = sklearn.model_selection.GridSearchCV(pipe_hc, grid_params, verbose=2,
-        n_jobs=os.cpu_count())
-clf_hc.fit(X, y)
+pipe_hc.set_params(grassmann__hidden_dim=1, hclf__alpha=0.0001, hclf__n=2, hclf__q=2)
+cv_hc = sklearn.model_selection.cross_validate(pipe_hc, X, y, n_jobs=-1, cv=3)
 
 ### SVM
 
@@ -45,19 +33,10 @@ pipe_svm = sklearn.pipeline.Pipeline([
     ("svm", manifold_svm.ManifoldSVM())
 ])
 
-grid_params = {
-    "trimmer__start": -(np.arange(5) + 6) * 48000,
-    "grassmann__hidden_dim": np.array([1, 2]),
-    "svm__kern_gamma": np.logspace(-2, 0.5, 5)
-}
-
-clf_svm = sklearn.model_selection.GridSearchCV(pipe_svm, grid_params, verbose=2,
-        n_jobs=os.cpu_count())
-clf_svm.fit(X, y)
+pipe_svm.set_params(grassmann__hidden_dim=1, svm__kern_gamma=0.01, trimmer__start=-6*48000)
+cv_svm = sklearn.model_selection.cross_validate(pipe_svm, X, y, n_jobs=-1, cv=3)
 
 ### results
 
-print("hc best score:", clf_hc.best_score_)
-print("hc best params:", clf_hc.best_params_)
-print("svm best score:", clf_svm.best_score_)
-print("svm best params:", clf_svm.best_params_)
+print("hc:", cv_hc["test_score"])
+print("svm:", cv_svm["test_score"])
