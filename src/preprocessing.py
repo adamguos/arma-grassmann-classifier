@@ -1,13 +1,12 @@
 import numpy as np
 import os
 import pdb
-import scipy.io.wavfile
+from scipy.io import wavfile, loadmat
 from sklearn.base import BaseEstimator
 
 def vehicle_audio_percus():
     # dirs = ["../data/audio_data_percus/132_0430", "../data/audio_data_percus/133_0430"]
     dirs = ["../data/audio_data_percus/whiteblackred"]
-    target = "../data/audio_data_percus"
 
     X = []
     y = []
@@ -19,7 +18,7 @@ def vehicle_audio_percus():
             if not fname.split(".")[-1] == "wav":
                 continue
 
-            wav = scipy.io.wavfile.read(os.path.join(dname, fname))
+            wav = wavfile.read(os.path.join(dname, fname))
             X.append(wav[1])
             
             for l in labels:
@@ -27,13 +26,21 @@ def vehicle_audio_percus():
                     y.append(l)
                     break
 
-    X = np.array(X, dtype=object)
-    y = np.array(y)
+    return X, np.array(y)
 
-    np.save(os.path.join(target, "X"), X)
-    np.save(os.path.join(target, "y"), y)
+def lip_naoki():
+    X = []
+    y = []
+    raw = loadmat("../data/videoclipdata_naoki/LipData.mat")["data"][0, 0]
+    
+    for r in raw:
+        X.append(r)
+    
+    for d in range(5):
+        for i in range(10):
+            y.append(d + 1)
 
-    return X, y
+    return X, np.array(y)
 
 class Trimmer(BaseEstimator):
     """
@@ -53,7 +60,4 @@ class Trimmer(BaseEstimator):
         trimmed = []
         for x in X:
             trimmed.append(x[self.start:self.end])
-        return np.array(trimmed)
-
-if __name__ == "__main__":
-    X, y = vehicle_audio_percus()
+        return trimmed

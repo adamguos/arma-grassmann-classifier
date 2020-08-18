@@ -9,7 +9,7 @@ import hermite_classifier
 import manifold_svm
 import preprocessing
 
-X, y = preprocessing.vehicle_audio_percus()
+X, y = preprocessing.lip_naoki()
 
 le = sklearn.preprocessing.LabelEncoder()
 le.fit(y)
@@ -26,8 +26,6 @@ pipe_hc = sklearn.pipeline.Pipeline([
     ("disc", discretiser.Discretiser())
 ])
 
-pipe_hc.set_params(grassmann__hidden_dim=2, hclf__alpha=0.0001, hclf__n=2, hclf__q=2,
-        trimmer__start=-7*48000)
 cv_hc = sklearn.model_selection.cross_validate(pipe_hc, X, y, n_jobs=-1)
 
 ### SVM
@@ -38,7 +36,6 @@ pipe_svm = sklearn.pipeline.Pipeline([
     ("svm", manifold_svm.ManifoldSVM())
 ])
 
-pipe_svm.set_params(grassmann__hidden_dim=2, svm__kern_gamma=0.01, trimmer__start=-6*48000)
 cv_svm = sklearn.model_selection.cross_validate(pipe_svm, X, y, n_jobs=-1)
 
 ### results

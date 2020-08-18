@@ -1,22 +1,11 @@
 import numpy as np
-import pdb
-from scipy.io import loadmat
-from sklearn import model_selection, pipeline
-import warnings
+import numpy as np
+import os
+import sklearn.model_selection, sklearn.pipeline, sklearn.preprocessing
 
 import arma
-import manifold_svm
-
-data = []
-labels = []
-raw = loadmat("../data/videoclipdata_naoki/LipData.mat")["data"][0, 0]
-
-for row in raw:
-    data.append(row)
-
-for d in range(5):
-    for i in range(10):
-        labels.append(d + 1)
+import hermite_classifier
+import preprocessing
 
 X_train, X_test, y_train, y_test = model_selection.train_test_split(data, labels, test_size=0.4,
         random_state=0)

@@ -47,3 +47,6 @@ class ManifoldSVM(svm.SVC):
         kern = lambda Y1, Y2 : gaussian_kernel(Y1, Y2, metrics.projection_metric_sq,
                 self.kern_gamma)
         super().__init__(kernel=kern)
+
+    def transform(self, X):
+        return super().predict(X)

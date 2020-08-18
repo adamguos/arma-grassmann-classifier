@@ -134,9 +134,9 @@ class GrassmannSignal(BaseEstimator):
     Transforms time series data into points on a Grassmann manifold, represented by an orthonormal
     matrix. For use in sklearn.pipeline.
     """
-    def __init__(self, hidden_dim=5, truncate=5):
+    def __init__(self, hidden_dim=5, truncate=None):
         self.hidden_dim = hidden_dim
-        self.truncate = truncate
+        self.truncate = hidden_dim if truncate is None else truncate
 
     def fit(self, X, y=None):
         return self
