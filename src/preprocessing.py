@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import pandas as pd
 import pdb
 from scipy.io import wavfile, loadmat
 from sklearn.base import BaseEstimator
@@ -42,6 +43,15 @@ def lip_naoki():
 
     return X, np.array(y)
 
+def opportunity_activity():
+    dname = "../data/opportunity/OpportunityUCIDataset/dataset"
+    for fname in sorted(os.listdir(dname)):
+        if not fname.split(".")[-1] == "dat":
+            continue
+
+        df = pd.read_csv(os.path.join(dname, fname), sep=" ", header=None)
+        pdb.set_trace()
+
 class Trimmer(BaseEstimator):
     """
     Trims time series data. Expects timesteps to span axis 1. For use in sklearn.pipeline.
@@ -61,3 +71,6 @@ class Trimmer(BaseEstimator):
         for x in X:
             trimmed.append(x[self.start:self.end])
         return trimmed
+
+if __name__ == "__main__":
+    opportunity_activity()
