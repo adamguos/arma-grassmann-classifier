@@ -52,6 +52,14 @@ def opportunity_activity():
         df = pd.read_csv(os.path.join(dname, fname), sep=" ", header=None)
         pdb.set_trace()
 
+def eeg_irvine():
+    X_train = np.load("../data/eeg_irvine/X_train.npy")
+    X_test = np.load("../data/eeg_irvine/X_test.npy")
+    y_train = np.load("../data/eeg_irvine/y_train.npy")
+    y_test = np.load("../data/eeg_irvine/y_test.npy")
+
+    return X_train, X_test, y_train, y_test
+
 class Trimmer(BaseEstimator):
     """
     Trims time series data. Expects timesteps to span axis 1. For use in sklearn.pipeline.

@@ -4,16 +4,37 @@ References:
 """
 
 import numpy as np
+from numpy.polynomial import polynomial
+import pdb
 from scipy.special import eval_hermite, factorial, gamma, loggamma
+
+### Load Hermite polynomials
+
+n_max = 256
+
+h_coefs = np.zeros((n_max+1, n_max+1))
+h_coefs[0, 0] = np.pi ** (-1/4)
+h_coefs[1, :2] = [0, np.sqrt(2) * (np.pi ** (-1/4))]
+
+for k in np.arange(n_max-1) + 2:
+    hk = polynomial.polysub(np.sqrt(2/k) * polynomial.polymulx(h_coefs[k-1]),
+            np.sqrt((k-1)/k) * h_coefs[k-2])
+    h_coefs[k, :len(hk)] = hk
+
+### Functions
+
+def hs(n, x, orthonormal=True):
+    hs = eval_hermite(n, x)
+    if orthonormal:
+        denominator = (np.pi ** (1/4)) * (2 ** (n/2)) * (factorial(n) ** (1/2))
+        hs = hs / denominator
+    return hs
 
 def h(n, x, orthonormal=True):
     """
     Univariate Hermite polynomial of degree n, evaluated at points x.
     """
-    h = eval_hermite(n, x)
-    if orthonormal:
-        denominator = (np.pi ** (1/4)) * (2 ** (n/2)) * (factorial(n) ** (1/2))
-        h = h / denominator
+    h = polynomial.polyval(x, h_coefs[n])
     return h
 
 def psi(n, x):
@@ -57,8 +78,9 @@ def P(m, q, x):
         ls = np.arange(m + 1)
         coef_vec = np.power(np.zeros(m + 1) - 1, ls)
         coef_vec = coef_vec * np.exp(loggamma((q - 1) / 2 + m - ls) - loggamma(m - ls + 1))
-        coef_vec = coef_vec * np.exp(0.5 * loggamma(2 * ls + 1) - loggamma(ls + 1))
-        coef_vec = coef_vec / (2 ** ls)
+        coef_vec = coef_vec * np.exp(0.5 * loggamma(2 * ls + 1) - \
+                (ls * np.log(2) + loggamma(ls + 1)))
+        # coef_vec = coef_vec / (2 ** ls)
 
         coef_vec = np.repeat([coef_vec], len(x), axis=0).transpose()
 

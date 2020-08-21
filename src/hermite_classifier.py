@@ -57,10 +57,6 @@ class HermiteClassifier(BaseEstimator, ClassifierMixin):
             Phis[j, :] = hermite.Phi(self.n, self.q, (self.n ** (1 - self.alpha)) * norms[j, :])
 
         pred = self.coef * np.sum(labels * Phis, axis=0)
-        # pred = pred - pred.min()
-        # pred = pred / pred.max() * len(np.unique(self.y_train))
-        # pred[pred >= len(np.unique(self.y_train))] = len(np.unique(self.y_train)) - 1
-        # return pred.astype(int)
         return pred
 
     def transform(self, X_test):
