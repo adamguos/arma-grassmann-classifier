@@ -2,6 +2,7 @@ import numpy as np
 import os
 import pandas as pd
 import pdb
+import scipy.signal
 from scipy.io import wavfile, loadmat
 from sklearn.base import BaseEstimator
 
@@ -52,13 +53,28 @@ def opportunity_activity():
         df = pd.read_csv(os.path.join(dname, fname), sep=" ", header=None)
         pdb.set_trace()
 
-def eeg_irvine():
-    X_train = np.load("../data/eeg_irvine/X_train.npy")
-    X_test = np.load("../data/eeg_irvine/X_test.npy")
+def eeg_irvine(ifreq=False):
+    if ifreq:
+        X_train = np.load("../data/eeg_irvine/freqs_train.npy")
+        X_test = np.load("../data/eeg_irvine/freqs_test.npy")
+    else:
+        X_train = np.load("../data/eeg_irvine/X_train.npy")
+        X_test = np.load("../data/eeg_irvine/X_test.npy")
+
     y_train = np.load("../data/eeg_irvine/y_train.npy")
     y_test = np.load("../data/eeg_irvine/y_test.npy")
 
     return X_train, X_test, y_train, y_test
+
+def eeg_bonn(ifreq=False):
+    if ifreq:
+        X = np.load("../data/eeg_bonn/data/freqs.npy")
+    else:
+        X = np.load("../data/eeg_bonn/data/X.npy")
+
+    y = np.load("../data/eeg_bonn/data/y.npy")
+
+    return X, y
 
 class Trimmer(BaseEstimator):
     """
@@ -80,5 +96,19 @@ class Trimmer(BaseEstimator):
             trimmed.append(x[self.start:self.end])
         return trimmed
 
-if __name__ == "__main__":
-    opportunity_activity()
+class Detrend(BaseEstimator):
+    """
+    Removes linear trend from time series data. Expects timesteps to span axis 1. For use in
+    sklearn.pipeline.
+    """
+    def __init__(self):
+        pass
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X, y=None):
+        detrended = []
+        for x in X:
+            detrended.append(scipy.signal.detrend(x, axis=0))
+        return detrended

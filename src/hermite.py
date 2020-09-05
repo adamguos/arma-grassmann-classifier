@@ -10,7 +10,7 @@ from scipy.special import eval_hermite, factorial, gamma, loggamma
 
 ### Load Hermite polynomials
 
-n_max = 256
+n_max = 2048
 
 h_coefs = np.zeros((n_max+1, n_max+1))
 h_coefs[0, 0] = np.pi ** (-1/4)
@@ -69,9 +69,8 @@ def P(m, q, x):
     [1] equation (3.5)
     """
     if q == 1:
-        return (np.pi ** (-1/4)) * ((-1) ** m) * \
-                (np.exp(0.5 * loggamma(2*m + 1) - loggamma(m + 1))) / \
-                (2 ** m) * psi(2*m, x)
+        return (np.pi ** (-1/4)) * ((-1) ** m) * (np.exp(0.5 * loggamma(2*m + 1)
+                - (m * np.log(2) + loggamma(m + 1)))) * psi(2*m, x)
     else:
         coef = 1 / (np.pi ** ((2*q - 1) / 4) * gamma((q - 1) / 2))
 
@@ -80,7 +79,6 @@ def P(m, q, x):
         coef_vec = coef_vec * np.exp(loggamma((q - 1) / 2 + m - ls) - loggamma(m - ls + 1))
         coef_vec = coef_vec * np.exp(0.5 * loggamma(2 * ls + 1) - \
                 (ls * np.log(2) + loggamma(ls + 1)))
-        # coef_vec = coef_vec / (2 ** ls)
 
         coef_vec = np.repeat([coef_vec], len(x), axis=0).transpose()
 

@@ -1,0 +1,20 @@
+The problem of classification of time series arises in many applications of signal processing and
+machine learning, e.g., audio/video signal processing, and EEG signal processing. We investigated
+novel solutions to some of these problems.
+
+We focused on two approaches to extracting relevant features from the data for classification. The
+first is the method of extracting the instantaneous frequencies in the signal using the signal
+separation operator (SSO), developed by Chui and Mhaskar. The second is a method of representing the
+data on a Grassmann manifold by parametrising it using a dynamic model. We trained support vector
+machines with appropriate kernels for classification on these extracted features.
+
+We performed tests on several publicly available datasets, and found that the SSO approach performed
+well on time series with low dimensional feature space, whereas the manifold approach took better
+advantage of high dimensional representations. This investigation demonstrates the effectiveness of
+frequency-based preprocessing in machine learning applications, as well as the ability of data based
+manifold techniques in improving upon the performance of existing algorithms.
+
+With this project, I gained familiarity with developing techniques in the fields of manifold
+learning, signal processing and function approximation. The project enhanced my understanding of
+novel algorithms for machine learning, encouraging me in my career goal to do further research in
+these directions.

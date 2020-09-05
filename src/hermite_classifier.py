@@ -11,20 +11,6 @@ import pdb
 import hermite
 import metrics
 
-def distance_matrix(X, Y, metric):
-    """
-    Computes distance matrix between elements of X and Y, using metric. Returns 2D array distance,
-    where distance[i, j] = metric(X[i], Y[j]).
-    """
-    distance = np.zeros((len(X), len(Y)))
-    for i in range(len(X)):
-        for j in range(len(Y)):
-            m = metric(X[i], Y[j])
-            if np.isnan(m):
-                pdb.set_trace()
-            distance[i, j] = m
-    return distance
-
 class HermiteClassifier(BaseEstimator, ClassifierMixin):
     """
     Classifier using Hermite approximator. For use in sklearn.pipeline.
@@ -48,7 +34,7 @@ class HermiteClassifier(BaseEstimator, ClassifierMixin):
         return self
 
     def predict(self, X_test):
-        norms = distance_matrix(self.X_train, X_test, self.metric)
+        norms = metrics.distance_matrix(self.X_train, X_test, self.metric)
 
         labels = np.repeat([self.y_train], len(X_test), axis=0).transpose()
         Phis = np.zeros_like(labels).astype(float)

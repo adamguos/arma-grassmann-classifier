@@ -6,6 +6,20 @@ References:
     [1] Jayasumana et al: Kernel methods on Riemannian manifolds with Gaussian RBF kernels
 """
 
+def distance_matrix(X, Y, metric):
+    """
+    Computes distance matrix between elements of X and Y, using metric. Returns 2D array distance,
+    where distance[i, j] = metric(X[i], Y[j]).
+    """
+    distance = np.zeros((len(X), len(Y)))
+    for i in range(len(X)):
+        for j in range(len(Y)):
+            m = metric(X[i], Y[j])
+            if np.isnan(m):
+                pdb.set_trace()
+            distance[i, j] = m
+    return distance
+
 def projection_metric_sq(Y1, Y2):
     """
     Computes square of projection metric between points Y1 and Y2 on Grassmann manifold. Refer to
