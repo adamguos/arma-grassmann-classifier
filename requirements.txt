@@ -1,4 +1,5 @@
 imblearn
+matplotlib
 numpy
 pandas
 sklearn

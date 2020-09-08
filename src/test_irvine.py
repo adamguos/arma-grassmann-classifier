@@ -27,6 +27,11 @@ y_test = le.transform(y_test)
 X = np.concatenate((X_train, X_test), 0)
 y = np.concatenate((y_train, y_test))
 
+import matplotlib.pyplot as plt
+for i in range(X_train.shape[2]):
+    plt.plot(np.linspace(0, 1, X_train.shape[1]), X_train[0, :, i], linewidth=1)
+plt.show()
+
 """
 
 ### Hermite classifier
@@ -57,10 +62,10 @@ print("no dct:", no_dct.score(X_test, y_test))
 ### SVM
 
 # no ifreq
-# pipe_svm = sklearn.pipeline.Pipeline([
-#     ("grassmann", arma.GrassmannSignal(hidden_dim=10)),
-#     ("svm", manifold_svm.ManifoldSVM(kern_gamma=0.2))
-# ])
+pipe_svm = sklearn.pipeline.Pipeline([
+    ("grassmann", arma.GrassmannSignal(hidden_dim=10)),
+    ("svm", manifold_svm.ManifoldSVM(kern_gamma=0.2))
+])
 
 # ifreq
 # pipe_svm = sklearn.pipeline.Pipeline([
@@ -72,13 +77,14 @@ print("no dct:", no_dct.score(X_test, y_test))
 #     "grassmann__hidden_dim": np.arange(6) + 5,
 #     "svm__kern_gamma": np.logspace(-2, 1, 6)
 # }
-# ps = sklearn.model_selection.PredefinedSplit(([-1] * len(X_train)) + ([1] * len(X_test)))
 
 # pipe_svm.fit(X_train, y_train)
 # print(pipe_svm.score(X_test, y_test))
 
-# cv = sklearn.model_selection.cross_validate(pipe_svm, X, y, n_jobs=-1)
-# print(cv["test_score"])
+# ps = sklearn.model_selection.PredefinedSplit(([-1] * len(X_train)) + ([1] * len(X_test)))
+kfold = sklearn.model_selection.RepeatedKFold(n_splits=3, n_repeats=5)
+cv = sklearn.model_selection.cross_validate(pipe_svm, X, y, n_jobs=-1, cv=kfold)
+print(cv["test_score"])
 
 # clf = sklearn.model_selection.GridSearchCV(pipe_svm, grid_params, cv=ps, n_jobs=-1, verbose=2)
 # clf.fit(X, y)
@@ -87,28 +93,28 @@ print("no dct:", no_dct.score(X_test, y_test))
 
 ### Hermite SVM
 
-proj = lambda X, Y : np.sqrt(metrics.projection_metric_sq(X, Y))
-arc = lambda X, Y : np.sqrt(metrics.arc_length_sq(X, Y))
-
-if not ifreq:
-    pipe_hsvm = sklearn.pipeline.Pipeline([
-        ("grassmann", arma.GrassmannSignal(hidden_dim=10)),
-        ("hsvm", manifold_svm.HermiteSVM(n=0, q=10, kern_metric=proj))
-    ])
-else:
-    pipe_hsvm = sklearn.pipeline.Pipeline([
-        ("grassmann", arma.GrassmannSignal(hidden_dim=10)),
-        ("hsvm", manifold_svm.HermiteSVM(n=0, q=10, kern_metric=proj))
-    ])
-
-grid_params = {
-    "hsvm__n": np.arange(3) * 4 + 8,
-    "hsvm__q": np.arange(5) * 2 + 1,
-    # "hsvm__kern_metric": [proj, arc, None],
-}
-
-cv_hsvm = sklearn.model_selection.cross_validate(pipe_hsvm, X, y, n_jobs=-1, verbose=2)
-print(cv_hsvm["test_score"], cv_hsvm["test_score"].mean())
+# proj = lambda X, Y : np.sqrt(metrics.projection_metric_sq(X, Y))
+# arc = lambda X, Y : np.sqrt(metrics.arc_length_sq(X, Y))
+# 
+# if not ifreq:
+#     pipe_hsvm = sklearn.pipeline.Pipeline([
+#         ("grassmann", arma.GrassmannSignal(hidden_dim=10)),
+#         ("hsvm", manifold_svm.HermiteSVM(n=0, q=10, kern_metric=proj))
+#     ])
+# else:
+#     pipe_hsvm = sklearn.pipeline.Pipeline([
+#         ("grassmann", arma.GrassmannSignal(hidden_dim=10)),
+#         ("hsvm", manifold_svm.HermiteSVM(n=0, q=10, kern_metric=proj))
+#     ])
+# 
+# grid_params = {
+#     "hsvm__n": np.arange(3) * 4 + 8,
+#     "hsvm__q": np.arange(5) * 2 + 1,
+#     # "hsvm__kern_metric": [proj, arc, None],
+# }
+# 
+# cv_hsvm = sklearn.model_selection.cross_validate(pipe_hsvm, X, y, n_jobs=-1, verbose=2)
+# print(cv_hsvm["test_score"], cv_hsvm["test_score"].mean())
 
 # clf = sklearn.model_selection.GridSearchCV(pipe_hsvm, grid_params, n_jobs=-1, verbose=2, cv=3)
 # clf.fit(X, y)

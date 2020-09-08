@@ -100,7 +100,7 @@
 \begin{alertblock}{Objectives}
     Improve time series classification by:
     \begin{itemize}
-        \item Using dynamic models to represent time sereis data as points on a Grassmann manifold
+        \item Using dynamic models to represent time series data as points on a Grassmann manifold
         \item Using kernel methods on said manifolds to perform classification while taking
             advantage of the full geometric information
     \end{itemize}
@@ -111,15 +111,16 @@
 %----------------------------------------------------------------------------------------
 
 \begin{block}{Introduction}
-    The objective of this project is to investigated novel solutions to the problem of
-    time series classification. This problem is widespread in signal processing and machine
-    learning, from identifying the sources of sound or radar signals, to detecting
-    algorithmically-generated ``deepfake'' video and audio. \lbr
+    \begin{itemize}
+        \item Time series classification is a widespread problem in signal processing and machine
+            learning
 
-    We implemented a new method for feature extraction: representing signals as points on a
-    Grassmann manifold via dynamic model parametrisation.  This geometric techinque proves to be
-    effective at capturing information from high-dimensional signals, performing well in
-    classification.
+        \item Identifying sources of sound or radar signals, detecting algorithmically-generated
+            ``deepfake'' video and audio, and many other applications
+
+        \item We investigate a novel method for feature extraction: representing signals as points
+            on a Grassmann manifold via dynamic model parametrisation
+    \end{itemize}
 \end{block}
 
 %----------------------------------------------------------------------------------------
@@ -142,8 +143,8 @@
     parameters $A$ and $C$. It can be shown that the expected observation sequence is given by
 
     \begin{equation}\label{eq:observation}
-        \mathbb{E}\left[\begin{pmatrix} f(0) \\ f(1) \\ f(2) \\ \vdots \end{pmatrix}\right]
-        = \begin{bmatrix} C \\ CA \\ CA^2 \\ \vdots \end{bmatrix} z(0)
+        O_\infty = \mathbb{E}\left[\begin{pmatrix} f(0) \\ f(1) \\ f(2) \\ \vdots
+            \end{pmatrix}\right] = \begin{bmatrix} C \\ CA \\ CA^2 \\ \vdots \end{bmatrix} z(0)
     \end{equation}
 \end{block}
 
@@ -160,21 +161,16 @@
 %----------------------------------------------------------------------------------------
 
 \begin{block}{Representation on Grassmann manifold}
-    % Traditional machine learning techniques largely assume data that lies in Euclidean space.
-    % Increasingly, techniques are being developed that account for non-linear geometric constraints
-    % on sampled data. One such technique is to interpret popular dynamic models of time series data
-    % as constructing points on the Grassmann manifold (the space of $d$-dimensional subspaces in
-    % $\mathbb{R}^n$) \cite{turaga_statistical_2011}.
+    \begin{itemize}
+        \item (\ref{eq:observation}) shows that the expected observations of $f(t)$ lie in the
+            column space of the observability matrix $O_\infty$
 
-    From (\ref{eq:observation}), we observe that the expected observations of $f(t)$ lie in the
-    column space of the observability matrix $O_\infty = \begin{bmatrix} C^T & (CA)^T & (CA^2)^T &
-    \cdots \end{bmatrix}^T$. \lbr
+        \item Approximate $O_\infty$ by truncating at the $m$th block, to form $O_m \in
+            \mathsf{M}_{mp \times d}$
 
-    We approximate the observability matrix by truncating at the $m$th block to form the
-    finite observability matrix $O_m \in \mathsf{M}_{mp \times d}$.  Thus, the ARMA model yields a
-    representation of a signal as a subspace of Euclidean space, and hence a point on the Grassmann
-    manifold. We store each subspace by orthonormalising $O_m$. \cite{turaga_statistical_2011}
-    recommends setting $d$ and $m$ to be equal, between 5 and 10.
+        \item Hence, ARMA model yields a representation of a signal as a Euclidean subspace (given
+            by the column space of $O_m$), and thus a point on the Grassmann manifold
+    \end{itemize}
 \end{block}
 
 %----------------------------------------------------------------------------------------
@@ -182,28 +178,51 @@
 %----------------------------------------------------------------------------------------
 
 \begin{block}{Kernel methods on Grassmann manifold}
-    Many machine learning algorithms, such as support vector machines (SVMs) and deep neural
-    networks, depend on the Euclidean structure of input data, particularly structures such as norms
-    and inner products \cite{jayasumana_kernel_2015}. One way to address this incongruency is to use
-    kernel methods that are defined on manifolds. In \cite{jayasumana_kernel_2015} Jayasumana et al.
-    generalise the Gaussian radial basis function (RBF) kernel $\exp(-\gamma \norm{x - y}^2)$ to
-    manifolds by replacing the Euclidean distance with a positive definite distance function,
-    specifically the projection distance on the Grassmann manifold
+    \begin{itemize}
+        \item Machine learning algorithms often assume that the data lies in Euclidean space
 
-    \begin{equation}
-        d_P([Y_1], [Y_2]) = 2^{-1/2} \norm{Y_1Y_1^T - Y_2Y_2^T}_F
-    \end{equation}
+        \item Kernel methods defined on manifolds can help generalise algorithms to non-Euclidean
+            space
 
-    where $[Y_i]$ is the subspace spanned by the columns of $Y_i$, and $Y_1$ and $Y_2$ are
-    matrices with orthonormal columns. This yields the projection Gaussian kernel on the Grassmann
-    manifold:
+        \item Jayasumana et al. \cite{jayasumana_kernel_2015} extends the Gaussian RBF kernel to the
+            Grassmann manifold:
 
-    \begin{equation}\label{eq:kernel}
-        k_P([Y_1, Y_2]) = \exp(-\gamma d_P^2([Y_1], [Y_2]))
-    \end{equation}
+            \begin{equation}
+                d_P([Y_1], [Y_2]) = 2^{-1/2} \norm{Y_1Y_1^T - Y_2Y_2^T}_F
+            \end{equation}
+            \begin{equation}\label{eq:kernel}
+                k_P([Y_1, Y_2]) = \exp(-\gamma d_P^2([Y_1], [Y_2]))
+            \end{equation}
 
-    where $\gamma$ is a hyperparameter. This enables the use of algorithms like SVM to classify time
-    series data in the form of orthonormal matrices representing points on a Grassmann manifold.
+            where $[Y_i]$ is the subspace spanned by the columns of $Y_i$, $Y_1$ and $Y_2$ are
+            matrices with orthonormal columns, and $\gamma$ is a hyperparameter
+        
+        \item Allows use of kernel-based algorithms like SVM to classify time series data
+    \end{itemize}
+\end{block}
+
+%----------------------------------------------------------------------------------------
+%   Algorithm
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Algorithm}
+    Input: list of train signals $\{X_i\}_{i=1}^n$, list of train labels $\{y_i\}_{i=1}^n$, list of
+    test signals $\{Y_i\}_{i=1}^m$
+
+    Output: list of predicted test labels
+    \begin{itemize}
+        \item For $i = 1, 2, \dots, n$:
+
+            \begin{itemize}
+                \item Compute parameters $C$ and $A$ for $X_i$
+                \item Compute $O_m$ for $X_i$
+                \item Orthonormalise $O_m$ and store as $U_i$
+            \end{itemize}
+
+        \item Using kernel $k_P$, fit SVM on $\{U_i\}_{i=1}^n, \{y_i\}_{i=1}^n$
+
+        \item Predict SVM on $\{Y_i\}_{i=1}^m$, return predicted labels
+    \end{itemize}
 \end{block}
 
 %----------------------------------------------------------------------------------------
@@ -219,22 +238,31 @@
 %----------------------------------------------------------------------------------------
 
 \begin{block}{Experiments}
-    We computed the representation of each signal as a point on the Grassmann manifold
-    according to (\ref{eq:observation}), and trained an SVM using the kernel function described in
-    (\ref{eq:kernel}) to perform classification.
-
-    We performed these tests on four sets of data, using 60\% of each dataset for training and 40\%
-    of testing.
+    Experiments were performed on four sets of data:
     \begin{itemize}
-        \item SUNY EEG Database Data Set, a set of measurements from 64 electrodes placed on
-            the scalp of alcoholic and non-alcoholic subjects \cite{zhang_event_1995} \\
-            $d = m = 9, \gamma = 0.2$
-        \item Epileptologie Bonn EEG data set, a set of single-channel measurements from epileptic
-            and non-epileptic patients \cite{andrzejak_indications_2001}
+        \item SUNY EEG Database Data Set: EEG tests of alcoholic and non-alcoholic subjects
+            \cite{zhang_event_1995}
+        \item Epileptologie Bonn EEG data set, EEG tests of epileptic and non-epileptic subjects
+            \cite{andrzejak_indications_2001}
         \item Audio recordings of different vehicles moving through a parking lot at approximately
             15 mph \cite{sunu_dimensionality_2018}
-        \item Video recordings of people speaking numeric digits 0-9 \cite{lieu_signal_2011}
+        \item Video recordings of people speaking digits 0-9 \cite{lieu_signal_2011}
     \end{itemize}
+
+    % \begin{figure}
+    %     \includegraphics[width=1\linewidth]{images/irvine.png}
+    %     \caption{Sample data from SUNY EEG dataset}
+    % \end{figure}
+
+    \begin{figure}
+        \includegraphics[width=0.8\linewidth]{images/car.png}
+        \caption{Test setup of car audio dataset}
+    \end{figure}
+
+    \begin{figure}
+        \includegraphics[width=0.6\linewidth]{images/lip.png}
+        \caption{Sample frame from lip video dataset}
+    \end{figure}
 \end{block}
 
 %----------------------------------------------------------------------------------------
@@ -243,14 +271,14 @@
 
 \begin{block}{Results}
     \begin{table}
-        \begin{tabular}{l r r}
+        \begin{tabular}{l r r r}
             \toprule
-            \textbf{Datasets} & Accuracy & Feature dim. \\
+            \textbf{Datasets} & Accuracy & Benchmark & Feature dim. \\
             \midrule
-            Alcohol EEG   & 99.8\% & 64 \\
-            Epilepsy EEG  & 66\%   & 1 \\
-            Vehicle audio & 63\%   & 2 \\
-            Video digits  & 98\%   & 3850 \\
+            Alcohol EEG       & 99.82\%  & 97.08\% \cite{sharma_novel_2017}       & 64 \\
+            Epilepsy EEG      & 66\%     & 99.66\% \cite{hutchison_eeg_2012}      & 1 \\
+            Vehicle audio     & 63\%     & 88.2\% \cite{sunu_dimensionality_2018} & 2 \\
+            Video digits      & 86.3\%   & 94.7\% \cite{lieu_signal_2011}         & 3850 \\
             \bottomrule
         \end{tabular}
         \caption{Classification accuracies and feature dimensions for each dataset}
@@ -271,16 +299,16 @@
 %----------------------------------------------------------------------------------------
 
 \begin{block}{Conclusions}
-    We conclude that the approach of representing time series data as points on a Grassmann manifold
-    via ARMA parameterisation, then applying a manifold kernel SVM for classification is highly
-    effective for datasets with a large number of features, namely the alcohol EEG and video digit
-    datasets.
+    \begin{itemize}
+        \item Classification is effective for datasets with high-dimensional features (alcohol EEG,
+            video digits)
 
-    The Grassmann SVM approach performs relatively poorly on datasets with fewer features, such as
-    the epilepsy EEG dataset and the vehicle audio dataset, which comprise 1 and 2 features
-    respectively. More sophisticated pre-processing techniques, such Fourier or wavelet
-    transformations and instantaneous frequency decompositions, can help extract more relevant
-    features from each signal and improve the performance of the Grassmann classification algorithm.
+        \item Ineffective for datasets with few channels (epilepsy EEG, vehicle audio)
+
+        \item Preprocessing techniques (e.g. Fourier or wavelet transform, instantaneous frequency
+            decompositions \cite{chui_signal_2016}) can help extract more relevant features from
+            each signal, improving classification performance
+    \end{itemize}
 \end{block}
 
 %----------------------------------------------------------------------------------------
