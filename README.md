@@ -7,6 +7,14 @@ Grassmann manifolds.
 
 Performs well on high-dimensional raw data.
 
+#### Usage
+
+```
+python src/test_main.py
+```
+
+List `tests` contains tests that can be run through.
+
 #### Results
 
 Details on datasets in [research
