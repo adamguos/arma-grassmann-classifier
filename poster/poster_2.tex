@@ -1,0 +1,439 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Jacobs Landscape Poster
+% LaTeX Template
+% Version 1.0 (29/03/13)
+%
+% Created by:
+% Computational Physics and Biophysics Group, Jacobs University
+% https://teamwork.jacobs-university.de:8443/confluence/display/CoPandBiG/LaTeX+Poster
+% 
+% Further modified by:
+% Nathaniel Johnston (nathaniel@njohnston.ca)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[final]{beamer}
+
+\usepackage[scale=1.2]{beamerposter} % Use the beamerposter package for laying out the poster
+
+\usetheme{confposter} % Use the confposter theme supplied with this template
+
+\setbeamercolor{block title}{fg=ngreen,bg=white} % Colors of the block titles
+\setbeamercolor{block body}{fg=black,bg=white} % Colors of the body of blocks
+\setbeamercolor{block alerted title}{fg=white,bg=dblue!70} % Colors of the highlighted block titles
+\setbeamercolor{block alerted body}{fg=black,bg=dblue!10} % Colors of the body of highlighted blocks
+% Many more colors are available for use in beamerthemeconfposter.sty
+
+%-----------------------------------------------------------
+% Define the column widths and overall poster size
+% To set effective sepwid, onecolwid and twocolwid values, first choose how many columns you want and how much separation you want between columns
+% In this template, the separation width chosen is 0.024 of the paper width and a 4-column layout
+% onecolwid should therefore be (1-(# of columns+1)*sepwid)/# of columns e.g. (1-(4+1)*0.024)/4 = 0.22
+% Set twocolwid to be (2*onecolwid)+sepwid = 0.464
+% Set threecolwid to be (3*onecolwid)+2*sepwid = 0.708
+
+\newlength{\sepwid}
+\newlength{\onecolwid}
+\newlength{\twocolwid}
+\newlength{\threecolwid}
+\setlength{\paperwidth}{48in} % A0 width: 46.8in
+\setlength{\paperheight}{36in} % A0 height: 33.1in
+\setlength{\sepwid}{0.024\paperwidth} % Separation width (white space) between columns
+\setlength{\onecolwid}{0.22\paperwidth} % Width of one column
+\setlength{\twocolwid}{0.464\paperwidth} % Width of two columns
+\setlength{\threecolwid}{0.708\paperwidth} % Width of three columns
+\setlength{\topmargin}{-0.5in} % Reduce the top margin size
+%-----------------------------------------------------------
+
+\usepackage{graphicx}  % Required for including images
+
+\usepackage{booktabs} % Top and bottom rules for tables
+
+\usepackage{physics}
+
+\usepackage{tabularx}
+
+\newcommand{\lbr}{\vspace{0.5in}}
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION 
+%----------------------------------------------------------------------------------------
+
+\title{Classifying time series data using manifold techniques} % Poster title
+
+\author{Adam Guo, supervised by Prof. Hrushikesh Mhaskar} % Author(s)
+
+\institute{Pomona College ('22), Claremont Graduate University} % Institution(s)
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\addtobeamertemplate{block end}{}{\vspace*{2ex}} % White space under blocks
+\addtobeamertemplate{block alerted end}{}{\vspace*{2ex}} % White space under highlighted (alert) blocks
+
+\setlength{\belowcaptionskip}{2ex} % White space under figures
+\setlength\belowdisplayshortskip{2ex} % White space under equations
+
+\begin{frame}[t] % The whole poster is enclosed in one beamer frame
+
+\begin{columns}[t] % The whole poster consists of three major columns, the second of which is split into two columns twice - the [t] option aligns each column's content to the top
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\begin{column}{\onecolwid} % The first column
+
+%----------------------------------------------------------------------------------------
+%   Objectives
+%----------------------------------------------------------------------------------------
+
+\begin{alertblock}{Objectives}
+   Classification of ime series using:
+    \begin{itemize}
+        \item dynamic models to represent time series data as points on a Grassmann manifold
+        \item  kernel methods on the manifold to perform classification while taking
+            advantage of the full geometric information
+    \end{itemize}
+\end{alertblock}
+
+%----------------------------------------------------------------------------------------
+%   Introduction
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Introduction}
+    \begin{itemize}
+        \item Time series classification is a  problem with many applications in signal processing and machine
+            learning
+\begin{itemize}
+\item Identifying sources of sound or radar signals, detecting algorithmically-generated
+            ``deepfake'' video and audio, and many other applications
+
+\end{itemize}
+ 
+        \item We investigate a  method for feature extraction: representing signals as points
+            on a Grassmann manifold via dynamic model parametrisation
+    \end{itemize}
+\end{block}
+
+%----------------------------------------------------------------------------------------
+%   Dynamic model parametrisation
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Dynamic model parametrisation}
+    The autoregressive-moving-average (ARMA) is a well-known dynamic model for time series data that
+    parametrises a signal $f(t)$ by the equations
+
+    \begin{equation}
+        f(t) = Cz(t) + w(t), \quad w(t) \sim \mathcal{N}(0, R)
+    \end{equation}
+    \begin{equation}
+        z(t + 1) = Az(t) + v(t), \quad v(t) \sim \mathcal{N}(0, Q)
+    \end{equation}
+
+    where $z \in \mathbb{R}^d$ is the hidden state vector, $d \leq p$ is the hidden state dimension
+    \cite{turaga_statistical_2011}. 
+    There are widely-used closed form solutions for estimating the
+    parameters $A$ and $C$. It can be shown that the expected observation sequence is given by
+
+    \begin{equation}\label{eq:observation}
+        O_\infty = \mathbb{E}\left[\begin{pmatrix} f(0) \\ f(1) \\ f(2) \\ \vdots
+            \end{pmatrix}\right] = \begin{bmatrix} C \\ CA \\ CA^2 \\ \vdots \end{bmatrix} z(0)
+    \end{equation}
+\end{block}
+
+%----------------------------------------------------------------------------------------
+
+\end{column} % End of the first column
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\begin{column}{\onecolwid} % Begin column 2
+
+%----------------------------------------------------------------------------------------
+%   Representation on Grassmann manifold
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Representation on Grassmann manifold}
+    \begin{itemize}
+        \item (\ref{eq:observation}) shows that the expected observations of $f(t)$ lie in the
+            column space of the observability matrix $O_\infty$
+
+        \item Approximate $O_\infty$ by truncating at the $m$th block, to form $O_m \in
+            \mathsf{M}_{mp \times d}$
+
+        \item Hence, ARMA model yields a representation of a signal as a Euclidean subspace (given
+            by the column space of $O_m$), and thus a point on the Grassmann manifold
+    \end{itemize}
+\end{block}
+
+%----------------------------------------------------------------------------------------
+%   Kernel methods on Grassmann manifold
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Kernel methods on Grassmann manifold}
+    \begin{itemize}
+       
+
+      
+
+        \item Jayasumana et al. \cite{jayasumana_kernel_2015} extends the Gaussian RBF kernel to the
+            Grassmann manifold:
+
+            \begin{equation}
+                d_P([Y_1], [Y_2]) = 2^{-1/2} \norm{Y_1Y_1^T - Y_2Y_2^T}_F
+            \end{equation}
+            \begin{equation}\label{eq:kernel}
+                k_P([Y_1, Y_2]) = \exp(-\gamma d_P^2([Y_1], [Y_2]))
+            \end{equation}
+
+            where $[Y_i]$ is the subspace spanned by the columns of $Y_i$, $Y_1$ and $Y_2$ are
+            matrices with orthonormal columns, and $\gamma$ is a hyperparameter
+        
+        \item Allows use of kernel-based algorithms like SVM to classify time series data
+    \end{itemize}
+\end{block}
+
+%----------------------------------------------------------------------------------------
+%   Algorithm
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Algorithm}
+    Input: list of train signals $\{X_i\}_{i=1}^n$, list of train labels $\{y_i\}_{i=1}^n$, list of
+    test signals $\{Y_i\}_{i=1}^m$
+
+    Output: list of predicted test labels
+    \begin{itemize}
+        \item For $i = 1, 2, \dots, n$:
+
+            \begin{itemize}
+                \item Compute parameters $C$ and $A$ for $X_i$
+                \item Compute $O_m$ for $X_i$
+                \item Orthonormalise $O_m$ and store as $U_i$
+            \end{itemize}
+
+        \item Using kernel $k_P$, fit SVM on $\{U_i\}_{i=1}^n, \{y_i\}_{i=1}^n$
+
+        \item Predict SVM on $\{Y_i\}_{i=1}^m$, return predicted labels
+    \end{itemize}
+\end{block}
+
+%----------------------------------------------------------------------------------------
+
+\end{column} % End of column 2
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\begin{column}{\onecolwid} % Begin column 3
+
+%----------------------------------------------------------------------------------------
+%   Experiments
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Experiments}
+    Experiments were performed on four sets of data:
+    \begin{itemize}
+        \item SUNY EEG Database Data Set: EEG tests of alcoholic and non-alcoholic subjects
+            \cite{zhang_event_1995}
+        \item Epileptologie Bonn EEG data set, EEG tests of epileptic and non-epileptic subjects
+            \cite{andrzejak_indications_2001}
+        \item Audio recordings of different vehicles moving through a parking lot at approximately
+            15 mph \cite{sunu_dimensionality_2018}
+        \item Video recordings of people speaking digits 0-9 \cite{lieu_signal_2011}
+    \end{itemize}
+
+    % \begin{figure}
+    %     \includegraphics[width=1\linewidth]{images/irvine.png}
+    %     \caption{Sample data from SUNY EEG dataset}
+    % \end{figure}
+
+    \begin{figure}
+        \includegraphics[width=0.8\linewidth]{images/car.png}
+        \caption{Test setup of car audio dataset}
+    \end{figure}
+
+    \begin{figure}
+        \includegraphics[width=0.6\linewidth]{images/lip.png}
+        \caption{Sample frame from lip video dataset}
+    \end{figure}
+\end{block}
+
+%----------------------------------------------------------------------------------------
+%   Results
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Results}
+    \begin{table}
+        \begin{tabular}{l r r r}
+            \toprule
+            \textbf{Datasets} & Accuracy & Benchmark & Feature dim. \\
+            \midrule
+            Alcohol EEG       & 99.82\%  & 97.08\%   & 64 \\
+            Epilepsy EEG      & 66\%     & 99.66\%   & 1 \\
+            Vehicle audio     & 63\%     & 88.2\%    & 2 \\
+            Video digits      & 86.3\%   & 94.7\%    & 3850 \\
+            \bottomrule
+        \end{tabular}
+        \caption{Classification accuracies and feature dimensions for each dataset}
+        \label{results}
+    \end{table}
+\end{block}
+
+%----------------------------------------------------------------------------------------
+
+\end{column} % End of column 3
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\begin{column}{\onecolwid} % Begin column 4
+
+%----------------------------------------------------------------------------------------
+%   Conclusions
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Conclusions}
+    \begin{itemize}
+        \item Classification is effective for datasets with high-dimensional features (alcohol EEG,
+            video digits)
+
+        \item Ineffective for datasets with few channels (epilepsy EEG, vehicle audio)
+
+        \item Preprocessing techniques (e.g. Fourier or wavelet transform, instantaneous frequency
+            decompositions \cite{chui_signal_2016}) can help extract more relevant features from
+            each signal, improving classification performance
+    \end{itemize}
+\end{block}
+
+%----------------------------------------------------------------------------------------
+%   References
+%----------------------------------------------------------------------------------------
+
+\begin{block}{References}
+
+% \nocite{*} % Insert publications even if they are not cited in the poster
+\footnotesize{\bibliographystyle{unsrt}
+\bibliography{citations}\vspace{0.75in}}
+
+\end{block}
+
+%----------------------------------------------------------------------------------------
+
+\end{column}    % End column 4
+
+%----------------------------------------------------------------------------------------
+%	ACKNOWLEDGEMENTS
+%----------------------------------------------------------------------------------------
+
+% \setbeamercolor{block title}{fg=red,bg=white} % Change the block title color
+% 
+% \begin{block}{Acknowledgements}
+% 
+% \small{\rmfamily{Nam mollis tristique neque eu luctus. Suspendisse rutrum congue nisi sed convallis. Aenean id neque dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.}} \\
+% 
+% \end{block}
+
+%----------------------------------------------------------------------------------------
+%	CONTACT INFORMATION
+%----------------------------------------------------------------------------------------
+
+% \setbeamercolor{block alerted title}{fg=black,bg=norange} % Change the alert block title colors
+% \setbeamercolor{block alerted body}{fg=black,bg=white} % Change the alert block body colors
+% 
+% \begin{alertblock}{Contact Information}
+% 
+% \begin{itemize}
+% \item Web: \href{http://www.university.edu/smithlab}{http://www.university.edu/smithlab}
+% \item Email: \href{mailto:john@smith.com}{john@smith.com}
+% \item Phone: +1 (000) 111 1111
+% \end{itemize}
+% 
+% \end{alertblock}
+% 
+% \begin{center}
+% \begin{tabular}{ccc}
+% \includegraphics[width=0.4\linewidth]{logo.png} & \hfill & \includegraphics[width=0.4\linewidth]{logo.png}
+% \end{tabular}
+% \end{center}
+
+% \begin{column}{\onecolwid}\vspace{-.6in} % The second column within column 2 (column 2.2)
+% 
+% \end{column} % End of column 2.2
+
+% \end{columns} % End of the split of column 2 - any content after this will now take up 2 columns width
+
+%----------------------------------------------------------------------------------------
+%	IMPORTANT RESULT
+%----------------------------------------------------------------------------------------
+
+% \begin{alertblock}{Important Result}
+% 
+% Lorem ipsum dolor \textbf{sit amet}, consectetur adipiscing elit. Sed commodo molestie porta. Sed ultrices scelerisque sapien ac commodo. Donec ut volutpat elit.
+% 
+% \end{alertblock} 
+
+%----------------------------------------------------------------------------------------
+
+% \begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column again
+% 
+% \begin{column}{\onecolwid} % The first column within column 2 (column 2.1)
+
+
+%----------------------------------------------------------------------------------------
+
+% \end{column} % End of column 2.1
+% 
+% \begin{column}{\onecolwid} % The second column within column 2 (column 2.2)
+
+%----------------------------------------------------------------------------------------
+%	RESULTS
+%----------------------------------------------------------------------------------------
+
+% \begin{block}{Results}
+% 
+% \begin{figure}
+% \includegraphics[width=0.8\linewidth]{placeholder.jpg}
+% \caption{Figure caption}
+% \end{figure}
+% 
+% Nunc tempus venenatis facilisis. Curabitur suscipit consequat eros non porttitor. Sed a massa dolor, id ornare enim:
+% 
+% \begin{table}
+% \vspace{2ex}
+% \begin{tabular}{l l l}
+% \toprule
+% \textbf{Treatments} & \textbf{Response 1} & \textbf{Response 2}\\
+% \midrule
+% Treatment 1 & 0.0003262 & 0.562 \\
+% Treatment 2 & 0.0015681 & 0.910 \\
+% Treatment 3 & 0.0009271 & 0.296 \\
+% \bottomrule
+% \end{tabular}
+% \caption{Table caption}
+% \end{table}
+% 
+% \end{block}
+
+%----------------------------------------------------------------------------------------
+
+% \end{column} % End of column 2.2
+% 
+% \end{columns} % End of the split of column 2
+% 
+% \end{column} % End of the second column
+
+%----------------------------------------------------------------------------------------
+
+\end{columns} % End of all the columns in the poster
+
+\end{frame} % End of the enclosing frame
+
+\end{document}

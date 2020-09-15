@@ -5,6 +5,7 @@ import pdb
 import scipy.signal
 from scipy.io import wavfile, loadmat
 from sklearn.base import BaseEstimator
+import sklearn.decomposition
 
 def vehicle_audio_percus():
     # dirs = ["../data/audio_data_percus/132_0430", "../data/audio_data_percus/133_0430"]
@@ -96,10 +97,9 @@ class Trimmer(BaseEstimator):
             trimmed.append(x[self.start:self.end])
         return trimmed
 
-class Detrend(BaseEstimator):
+class Average(BaseEstimator):
     """
-    Removes linear trend from time series data. Expects timesteps to span axis 1. For use in
-    sklearn.pipeline.
+    Averages across columns. Expects timesteps to span axis 1. For use in sklearn.pipeline.
     """
     def __init__(self):
         pass
@@ -108,7 +108,42 @@ class Detrend(BaseEstimator):
         return self
 
     def transform(self, X, y=None):
-        detrended = []
+        averaged = []
         for x in X:
-            detrended.append(scipy.signal.detrend(x, axis=0))
-        return detrended
+            averaged.append(x.mean(axis=1))
+        return averaged
+
+class Flatten(BaseEstimator):
+    """
+    Flattens 3D signals into 2D. Expects timesteps to span axis 1. For use in sklearn.pipeline.
+    """
+    def __init__(self):
+        pass
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X, y=None):
+        flattened = []
+        for x in X:
+            flattened.append(x.flatten())
+        return flattened
+
+class PCA(BaseEstimator):
+    """
+    Performs PCA on supplied signals. Expects timesteps to span axis 1. For use in sklearn.pipeline.
+    """
+    def __init__(self, n_components):
+        self.n_components = n_components
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X, y=None):
+        pcad = []
+        for x in X:
+            x = x.transpose()
+            pca = sklearn.decomposition.PCA(n_components=self.n_components)
+            pca.fit(x)
+            pcad.append(pca.transform(x))
+        return pcad

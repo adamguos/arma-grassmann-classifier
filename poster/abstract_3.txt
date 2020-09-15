@@ -1,0 +1,7 @@
+The problem of classification of time series arises in many applications of signal processing and machine learning, e.g., audio/video signal processing, and EEG signal processing. We investigated tools from manifold learning for solving some of these problems.
+
+We represented each time series as a point on a Grassmann manifold by parametrizing it using the autoregressive-moving average model. We then trained a support vector machine (SVM) with an appropriate kernel for classification on the Grassmann manifold. Typically, no feature selection (such as short-term Fourier transform, Laplacian eigenmap, etc.) was performed on the time series itself.
+
+We performed tests on several publicly available datasets and found that an SVM with an appropriate kernel on the Grassmann manifold consistently performs better than an SVM using a typical Gaussian kernel that acts on the data in Euclidean space. Furthermore, we found that the Grassmann SVM technique sometimes overperformed the state-of-the-art results in the literature for these high-dimensional datasets, without the need for any other preprocessing techniques as used in the literature.
+
+With this project, I gained familiarity with developing techniques in the fields of manifold learning, signal processing and function approximation. The project enhanced my understanding of novel algorithms for machine learning, encouraging me in my career goal to do further research in these directions.

@@ -69,7 +69,7 @@
 %	TITLE SECTION 
 %----------------------------------------------------------------------------------------
 
-\title{Classifying time series data via frequency decomposition and manifold techniques} % Poster title
+\title{Classifying time series data via manifold techniques} % Poster title
 
 \author{Adam Guo, supervised by Prof. Hrushikesh Mhaskar} % Author(s)
 
@@ -98,10 +98,10 @@
 %----------------------------------------------------------------------------------------
 
 \begin{alertblock}{Objectives}
-    Improve time series classification by:
+   Classification of ime series using:
     \begin{itemize}
-        \item Using dynamic models to represent time series data as points on a Grassmann manifold
-        \item Using kernel methods on said manifolds to perform classification while taking
+        \item dynamic models to represent time series data as points on a Grassmann manifold
+        \item  kernel methods on the manifold to perform classification while taking
             advantage of the full geometric information
     \end{itemize}
 \end{alertblock}
@@ -112,17 +112,18 @@
 
 \begin{block}{Introduction}
     \begin{itemize}
-        \item Time series classification is a widespread problem in signal processing and machine
+        \item Time series classification is a  problem with many applications in signal processing and machine
             learning
-
-        \item Identifying sources of sound or radar signals, detecting algorithmically-generated
+\begin{itemize}
+\item Identifying sources of sound or radar signals, detecting algorithmically-generated
             ``deepfake'' video and audio, and many other applications
 
-        \item We investigate a novel method for feature extraction: representing signals as points
+\end{itemize}
+ 
+        \item We investigate a  method for feature extraction: representing signals as points
             on a Grassmann manifold via dynamic model parametrisation
     \end{itemize}
 \end{block}
-
 %----------------------------------------------------------------------------------------
 %   Dynamic model parametrisation
 %----------------------------------------------------------------------------------------
@@ -138,9 +139,10 @@
         z(t + 1) = Az(t) + v(t), \quad v(t) \sim \mathcal{N}(0, Q)
     \end{equation}
 
-    where $z \in \mathbb{R}^d$ is the hidden state vector, $d \leq p$ is the hidden state dimension
-    \cite{turaga_statistical_2011}. There are widely-used closed form solutions for estimating the
-    parameters $A$ and $C$. It can be shown that the expected observation sequence is given by
+    where $z \in \mathbb{R}^d$ is the hidden state vector, $f : \mathbb{R} \rightarrow
+    \mathbb{R}^p$, and $d \leq p$ is the hidden state dimension \cite{turaga_statistical_2011}.
+    There are widely-used closed form solutions for estimating the parameters $A$ and $C$. It can be
+    shown \cite{turaga_statistical_2011} that the expected observation sequence is given by
 
     \begin{equation}\label{eq:observation}
         O_\infty = \mathbb{E}\left[\begin{pmatrix} f(0) \\ f(1) \\ f(2) \\ \vdots
@@ -170,6 +172,7 @@
 
         \item Hence, ARMA model yields a representation of a signal as a Euclidean subspace (given
             by the column space of $O_m$), and thus a point on the Grassmann manifold
+            $\textbf{Gr}(d, mp)$
     \end{itemize}
 \end{block}
 
@@ -179,12 +182,10 @@
 
 \begin{block}{Kernel methods on Grassmann manifold}
     \begin{itemize}
-        \item Machine learning algorithms often assume that the data lies in Euclidean space
+        
+        \item Kernel based methods are used widely in manifold learning.
 
-        \item Kernel methods defined on manifolds can help generalise algorithms to non-Euclidean
-            space
-
-        \item Jayasumana et al. \cite{jayasumana_kernel_2015} extends the Gaussian RBF kernel to the
+        \item Jayasumana et al. \cite{jayasumana_kernel_2015} define the analogue of the Gaussian RBF kernel for  the
             Grassmann manifold:
 
             \begin{equation}
@@ -197,7 +198,8 @@
             where $[Y_i]$ is the subspace spanned by the columns of $Y_i$, $Y_1$ and $Y_2$ are
             matrices with orthonormal columns, and $\gamma$ is a hyperparameter
         
-        \item Allows use of kernel-based algorithms like SVM to classify time series data
+        \item We use the representation of a time series as a point on the Grassman manifold  to do classification based on Support Vector Machines (SVMs) using the above kernel
+        
     \end{itemize}
 \end{block}
 
@@ -238,31 +240,37 @@
 %----------------------------------------------------------------------------------------
 
 \begin{block}{Experiments}
-    Experiments were performed on four sets of data:
+    Experiments were performed on four sets of data. For each dataset, we performed the supervised
+    learning algorithm detailed above using the raw data as input, and compared its classification
+    accuracy to a simple SVM that flattens the input data and uses a Gaussian kernel in Euclidean
+    space. We also include the best results found in the relevant literature for reference. Note that these results
+    extensive preprocessing on the data before classification, while our results are based on raw data. \lbr
+
+    \textit{SUNY EEG Database} \cite{zhang_event_1995}:
     \begin{itemize}
-        \item SUNY EEG Database Data Set: EEG tests of alcoholic and non-alcoholic subjects
-            \cite{zhang_event_1995}
-        \item Epileptologie Bonn EEG data set, EEG tests of epileptic and non-epileptic subjects
-            \cite{andrzejak_indications_2001}
-        \item Audio recordings of different vehicles moving through a parking lot at approximately
-            15 mph \cite{sunu_dimensionality_2018}
-        \item Video recordings of people speaking digits 0-9 \cite{lieu_signal_2011}
+        \item EEG tests of alcoholic and non-alcoholic subjects ($p = 64$)
+        \item Train/test split is predefined (at \char`~48\% test data), one trial is performed
+        \item Parameters used: $d = m = 10, \gamma = 0.2$
     \end{itemize}
 
-    % \begin{figure}
-    %     \includegraphics[width=1\linewidth]{images/irvine.png}
-    %     \caption{Sample data from SUNY EEG dataset}
-    % \end{figure}
+    \textit{Vehicle audio recordings} \cite{sunu_dimensionality_2018}:
+    \begin{itemize}
+        \item Audio recordings of different vehicles moving through a parking lot at around 15 mph
+            ($p = 2$)
+        \item 50\% of data used for testing, 20 trials performed
+        \item Last 6 seconds of each recording is used (only the part where the car is near the
+            microphone)
+        \item Parameters used: $d = 2, m = 10, \gamma = 10$
+    \end{itemize}
 
-    \begin{figure}
-        \includegraphics[width=0.8\linewidth]{images/car.png}
-        \caption{Test setup of car audio dataset}
-    \end{figure}
-
-    \begin{figure}
-        \includegraphics[width=0.6\linewidth]{images/lip.png}
-        \caption{Sample frame from lip video dataset}
-    \end{figure}
+    \textit{Lip videos} \cite{lieu_signal_2011}:
+    \begin{itemize}
+        \item Video recordings of a person speaking the digits 1-5 ($p = 3850$)
+        \item 50\% of data used for testing, 20 trials performed
+        \item Parameters used: $d = m = 10, \gamma = 0.2$
+        \item Since the videos are not equally long, for Euclidean SVM we perform principal
+            component analysis across the frames to extract 30 principal vectors
+    \end{itemize}
 \end{block}
 
 %----------------------------------------------------------------------------------------
@@ -273,15 +281,15 @@
     \begin{table}
         \begin{tabular}{l r r r}
             \toprule
-            \textbf{Datasets} & Accuracy & Benchmark & Feature dim. \\
+            \textbf{Datasets} & Grass. & Eucl.  & Literature \\
             \midrule
-            Alcohol EEG       & 99.82\%  & 97.08\% \cite{sharma_novel_2017}       & 64 \\
-            Epilepsy EEG      & 66\%     & 99.66\% \cite{hutchison_eeg_2012}      & 1 \\
-            Vehicle audio     & 63\%     & 88.2\% \cite{sunu_dimensionality_2018} & 2 \\
-            Video digits      & 86.3\%   & 94.7\% \cite{lieu_signal_2011}         & 3850 \\
+            Alcohol EEG       & \textbf{99.8}\% & 80.8\% & 97.1\% \cite{sharma_novel_2017} \\
+            Vehicle audio     & 62.8\% & 51.8\% & \textbf{88.2}\% \cite{sunu_dimensionality_2018} \\
+            Video digits      & \textbf{97.0}\% & 76.6\% & 94.7\% \cite{lieu_signal_2011} \\
             \bottomrule
         \end{tabular}
-        \caption{Classification accuracies and feature dimensions for each dataset}
+        \caption{Classification accuracies of different algorithms per dataset (best performer in
+        bold)}
         \label{results}
     \end{table}
 \end{block}
@@ -300,14 +308,36 @@
 
 \begin{block}{Conclusions}
     \begin{itemize}
-        \item Classification is effective for datasets with high-dimensional features (alcohol EEG,
-            video digits)
+        \item Grassmann SVM performs significantly better (11-21\% more) than straightforward
+            Euclidean SVM, demonstrating effectiveness of parametrising signal in the Grassmann
+            manifold
+        \item For alcohol EEG and video digit datasets, Grassmann SVM approach on raw data performs
+            better than literature results that use extensive preprocessing (orthogonal wavelet
+            filter bank in \cite{sharma_novel_2017}, PCA using earth mover's distance in
+            \cite{lieu_signal_2011})
+    \end{itemize}
+    % \begin{itemize}
+    %     \item Classification is effective for datasets with high-dimensional features (alcohol EEG,
+    %         video digits)
 
-        \item Ineffective for datasets with few channels (epilepsy EEG, vehicle audio)
+    %     \item Ineffective for datasets with few channels (epilepsy EEG, vehicle audio)
 
-        \item Preprocessing techniques (e.g. Fourier or wavelet transform, instantaneous frequency
-            decompositions \cite{chui_signal_2016}) can help extract more relevant features from
-            each signal, improving classification performance
+    %     \item Preprocessing techniques (e.g. Fourier or wavelet transform, instantaneous frequency
+    %         decompositions \cite{chui_signal_2016}) can help extract more relevant features from
+    %         each signal, improving classification performance
+    % \end{itemize}
+\end{block}
+
+%----------------------------------------------------------------------------------------
+%   Conclusions
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Further work}
+    \begin{itemize}
+        \item Implementing preprocessing techniques used with success in literature may improve
+            performance, particuarly for vehicle audio dataset
+        \item Fourier or wavelet transforms, instantaneous frequency decompositions
+            \cite{chui_signal_2016}
     \end{itemize}
 \end{block}
 
@@ -318,7 +348,7 @@
 \begin{block}{References}
 
 % \nocite{*} % Insert publications even if they are not cited in the poster
-\footnotesize{\bibliographystyle{unsrt}
+\scriptsize{\bibliographystyle{unsrt}
 \bibliography{citations}\vspace{0.75in}}
 
 \end{block}
