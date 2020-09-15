@@ -15,6 +15,8 @@ python src/test_main.py
 
 List `tests` contains tests that can be run through.
 
+Note: test data not included in the repository!
+
 #### Results
 
 Details on datasets in [research
