@@ -9,6 +9,22 @@ Performs well on high-dimensional raw data.
 
 #### Usage
 
+```python
+from arma_grassmann_classifier import ArmaGrassmannClassifier
+
+# X_train.ndim == X_test.ndim == 3
+# axis 0 = distinct signal
+# axis 1 = timestep
+# axis 2 = feature
+
+gc = ArmaGrassmannClassifier()
+gc.fit(X_train, y_train)
+
+print(gc.score(X_test, y_test))
+```
+
+Running tests:
+
 ```
 python src/test_main.py
 ```

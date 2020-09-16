@@ -11,7 +11,6 @@ import manifold_svm
 import metrics
 import preprocessing
 import signal_transform
-import sso
 
 tests = [
     # "alc_euclidean",

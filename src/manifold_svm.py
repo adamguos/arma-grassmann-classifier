@@ -58,7 +58,7 @@ class ManifoldSVM(svm.SVC):
     SVM classifier using Gaussian projection metric kernel on Grassmann manifold. For use in
     sklearn.pipeline.
     """
-    def __init__(self, kern_gamma=0.5):
+    def __init__(self, kern_gamma=0.2):
         self.kern_gamma = kern_gamma
         kern = lambda Y1, Y2 : gaussian_kernel(Y1, Y2, metrics.projection_metric_sq,
                 self.kern_gamma)
