@@ -13,11 +13,11 @@ Performs well on high-dimensional raw data.
 from arma_grassmann_classifier import ARMAGrassmannClassifier
 
 # X_train.ndim == X_test.ndim == 3
-# axis 0 = distinct signal
+# axis 0 = sampled signal
 # axis 1 = timestep
 # axis 2 = feature
 
-gc = ArmaGrassmannClassifier()
+gc = ARMAGrassmannClassifier()
 gc.fit(X_train, y_train)
 
 print(gc.score(X_test, y_test))
