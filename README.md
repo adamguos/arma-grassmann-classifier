@@ -10,7 +10,7 @@ Performs well on high-dimensional raw data.
 #### Usage
 
 ```python
-from arma_grassmann_classifier import ArmaGrassmannClassifier
+from arma_grassmann_classifier import ARMAGrassmannClassifier
 
 # X_train.ndim == X_test.ndim == 3
 # axis 0 = distinct signal
